@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use duzun\hQuery;
-use Http\Discovery\HttpClientDiscovery;
-use Http\Discovery\MessageFactoryDiscovery;
-use PHPHtmlParser\Dom;
 use Goutte\Client;
 
 
@@ -52,13 +49,14 @@ class ParserController extends Controller
             $QAV = [];
             foreach ($url_1->find('p[class=question-q]') as $question) {
                 if (is_array(json_decode($client->getResponse()->getContent())))
-                foreach (json_decode($client->getResponse()->getContent()) as $question2) {
-                    if ($question2->question->message == $question)
-                        $urlVideo = 'https://scitylanamda.asktape.com/' . $question2->user->nickname . '/video/' . $question2->code . '/';
-                        $crawlerVideo = $client->request('GET',$urlVideo);
-                        $QAV[] = ['question' => $question2->question->message,
-                            'video_url' => $crawlerVideo->filter('#popup-play-video')->first()->attr('src')];
-                }
+                    foreach (json_decode($client->getResponse()->getContent()) as $question2) {
+                        if ($question2->question->message == $question) {
+                            $urlVideo = 'https://scitylanamda.asktape.com/' . $question2->user->nickname . '/video/' . $question2->code . '/';
+                            $crawlerVideo = $client->request('GET', $urlVideo);
+                            $QAV[] = ['question' => $question2->question->message,
+                                'video_url' => $crawlerVideo->filter('#popup-play-video')->first()->attr('src')];
+                        }
+                    }
             }
             return view('form', ['QAV' => $QAV]);
         }
